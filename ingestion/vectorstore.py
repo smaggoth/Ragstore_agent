@@ -1,7 +1,7 @@
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams, PointStruct
-from chunking import chunck_markdown
-from embedding import embeddings_call
+from qdrant_client.models import Distance, VectorParams, PointStruct, models
+from ingestion.chunking import chunck_markdown
+from ingestion.embedding import embeddings_call
 import uuid
 from pathlib import Path
 
@@ -30,15 +30,21 @@ def create_collection(name, dimension):
         if not client.collection_exists(name):
             client.create_collection(
                 collection_name= name,
-                vectors_config=VectorParams(
+                vectors_config={
+                     'dense': VectorParams(
                     size=dimension,
-                    distance=Distance.COSINE
-                ),
+                    distance=Distance.COSINE)
+                },
+                sparse_vectors_config={
+                     'bm25': models.SparseVectorParams(
+                          modifier=models.Modifier.IDF
+                     )
+                },
             )
         return name
 
 
-def  save_chunks(chunks, dimension, embeddings):
+def  save_chunks(chunks:list, dimension:int, embeddings:list):
     """
     Function to create the Point Structure for Qdrant vector store
     Args:
@@ -46,11 +52,14 @@ def  save_chunks(chunks, dimension, embeddings):
         embeddings: Embeddings created for each document
     """
     points = []
-    for chunk in range(len(chunks)):
+    for _, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
         points.append(PointStruct(
             id=uuid.uuid4(),
-            vector=embeddings[chunk].values,
-            payload={'text':chunks[chunk]}
+            vector={
+                 'dense':embedding.values,
+                 'bm25':models.Document(text=chunk, model='Qdrant/bm25')    
+            },
+            payload={'text':chunk}
         ))
     collection = create_collection(COLLECTION_NAME, dimension)
     client.upsert(collection_name=collection, points=points)

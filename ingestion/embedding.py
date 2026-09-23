@@ -2,14 +2,14 @@ import os
 from dotenv import load_dotenv
 from google import genai
 from pathlib import Path
-from chunking import chunck_markdown
+from ingestion.chunking import chunck_markdown
 
 load_dotenv()
 
 client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
 
 
-def embeddings_call(chunks):
+def embeddings_call(chunks: list):
     """
     Function to create embeddings with Gemini from markdown documents
     Args:

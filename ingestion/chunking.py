@@ -1,4 +1,4 @@
-def chunck_markdown(files_path):
+def chunck_markdown(files_path) -> list:
     """
     Function to divide document in chunks based on headers.
     Ars:
