@@ -5,7 +5,8 @@ from qdrant_client import models
 
 client = QdrantClient(url='http://localhost:6333')
 
-def search(query, limit=5):
+def search(query: str, limit: int=5) -> dict:
+    output = {}
     embedding, _ = embeddings_call([query])
     query_embedding = embedding[0].values
     result = client.query_points(
@@ -26,9 +27,12 @@ def search(query, limit=5):
         limit = 3,
     )
     for point in result.points:
-        print(f'ID:{point.id}, Score:{point.score}, payload: {point.payload}')
+        output[point.id] = {'Score':point.score, 'payload':point.payload}
+    return output
+
+        #print(f'ID:{point.id}, Score:{point.score}, payload: {point.payload}')
 
 if __name__ == '__main__':
 
     query = 'fases del proyecto' 
-    search(query)
+    print(search(query))
