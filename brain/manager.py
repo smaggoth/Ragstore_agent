@@ -3,12 +3,14 @@ import asyncio
 from dotenv import load_dotenv
 from retrieval.search import search
 from brain.resources.prompts import SYSTEM_PROMPT
+from langchain_core.messages import SystemMessage
 from langgraph.prebuilt import tools_condition
 from langchain.tools import tool
 from langgraph.prebuilt import ToolNode
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, MessagesState, START
 from langchain_mcp_adapters.client import MultiServerMCPClient
+from langgraph.checkpoint.memory import InMemorySaver
 
 
 load_dotenv()
@@ -43,10 +45,11 @@ async def build_graph():
 
     web_search = await client.get_tools()
     tools = web_search + [call_rag]
+    shorterm_memory = InMemorySaver()
 
     def assistant(state:MessagesState):
 
-        messages = [SYSTEM_PROMPT] + state['messages']
+        messages = [SystemMessage(content=SYSTEM_PROMPT)] + state['messages']
         response = llm.bind_tools(tools).invoke(messages)
         return {'messages': [response]}
 
@@ -57,14 +60,24 @@ async def build_graph():
     builder.add_conditional_edges('assistant',tools_condition)
     builder.add_edge('tools', 'assistant')
 
-    app = builder.compile()
+    app = builder.compile(checkpointer=shorterm_memory)
     return app
 
 if __name__ == '__main__':
     async def main():
         app = await build_graph()
-        result = await app.ainvoke({'messages':[{'role':'user', 'content':'de que fases se compone el proyecto de RAG?'}]})
-        #print(result['messages'][-1].content)
+        config = {'configurable':{'thread_id':'1'}}
+        result = await app.ainvoke({'messages':[{'role':'user', 'content':'Hola mi nombre es Jorge'}]}, config)
+        for m in result['messages']:
+            m.pretty_print()
+        result = await app.ainvoke({'messages':[{'role':'user', 'content':'y tengo 31 años'}]}, config)
+        for m in result['messages']:
+            m.pretty_print()
+        result = await app.ainvoke({'messages':[{'role':'user', 'content':'cual es mi nombre?'}]}, config)
+        for m in result['messages']:
+            m.pretty_print()
+        config = {'configurable':{'thread_id':'2'}}
+        result = await app.ainvoke({'messages':[{'role':'user', 'content':'recuerdas mi nombre?'}]}, config)
         for m in result['messages']:
             m.pretty_print()
     asyncio.run(main())

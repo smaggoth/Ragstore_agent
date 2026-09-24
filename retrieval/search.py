@@ -30,9 +30,6 @@ def search(query: str, limit: int=5) -> dict:
         output[point.id] = {'Score':point.score, 'payload':point.payload}
     return output
 
-        #print(f'ID:{point.id}, Score:{point.score}, payload: {point.payload}')
-
 if __name__ == '__main__':
-
     query = 'fases del proyecto' 
     print(search(query))
