@@ -4,11 +4,11 @@ from typing import Optional
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables.config import RunnableConfig
 
-from langgraph.graph import MessagesState
 from langgraph.store.base import BaseStore
 from trustcall import create_extractor
 
 from brain.resources.llm import llm
+from brain.resources.summarizer import State
 
 
 class Profile(BaseModel):
@@ -24,7 +24,7 @@ extractor = create_extractor(
 )
 
 
-def update_profile(state: MessagesState, config: RunnableConfig, store: BaseStore):
+def update_profile(state: State, config: RunnableConfig, store: BaseStore):
     """Function to update the user profile with information extracted by TrustCall"""
     thread_id = config['configurable']['thread_id']
     namespace = ('profile', thread_id)
@@ -40,5 +40,5 @@ def update_profile(state: MessagesState, config: RunnableConfig, store: BaseStor
 
     updated_profile = result['responses'][0].model_dump()
     store.put(namespace, 'profile_data', updated_profile)
-    print(f'STORE####GUARDADO:{store.get(namespace,'profile_data')}')
+    print(f'##DEBUG##PERFIL#ACTUAL:{store.get(namespace,'profile_data')}')
     return{}

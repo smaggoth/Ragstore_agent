@@ -1,7 +1,6 @@
 from uuid import uuid4
 from pydantic import BaseModel, Field
 
-from langgraph.graph import MessagesState
 from langgraph.store.base import BaseStore
 from langgraph.store.memory import InMemoryStore
 
@@ -9,6 +8,7 @@ from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
+from brain.resources.summarizer import State
 
 class Memory(BaseModel):
     """An specific event or exchange within the conversation"""
@@ -36,7 +36,7 @@ def search_memories(query: str, thread_id: str, store: BaseStore, umbral: float 
     return None
 
 
-def check_memory(state: MessagesState, config: RunnableConfig, store: BaseStore):
+def check_memory(state: State, config: RunnableConfig, store: BaseStore):
     """Search and find the memories if exist"""
     thread_id = config['configurable']['thread_id']
     last_question = state['messages'][-1].content
@@ -49,7 +49,7 @@ def check_memory(state: MessagesState, config: RunnableConfig, store: BaseStore)
     return{}
 
 
-def update_memory(state: MessagesState, config: RunnableConfig, store: BaseStore):
+def update_memory(state: State, config: RunnableConfig, store: BaseStore):
     """Function to update the long term memory"""
     thread_id = config['configurable']['thread_id']
     namespace = ('memories', thread_id)
@@ -60,11 +60,11 @@ def update_memory(state: MessagesState, config: RunnableConfig, store: BaseStore
 
     memory_id = str(uuid4())
     store.put(namespace, memory_id, {'question':last_question, 'answer':last_response})
-    print(f'STORE##MEMORY##GUARDADO:{store.get(namespace, memory_id)}')
+    print(f'##DEBUG##MEMORY##GUARDADO:{store.get(namespace, memory_id)}')
     return {}
 
 
-def route_after_memory_check(state: MessagesState):
+def route_after_memory_check(state: State):
     last_state_message = state['messages'][-1]
     if isinstance(last_state_message, AIMessage):
         return '__end__'
