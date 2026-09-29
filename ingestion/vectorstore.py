@@ -23,7 +23,7 @@ def process_document(path):
 def create_collection(name, dimension):
         """
         Function to create the Qdrant collection for the embeddings
-        ARGS:
+        Args:
             name: Collection name
             dimension: Vectors dimension
         """

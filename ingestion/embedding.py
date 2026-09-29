@@ -13,7 +13,8 @@ def embeddings_call(chunks: list):
     """
     Function to create embeddings with Gemini from markdown documents
     Args:
-        chunks: Chunks created from markdown documents"""
+        chunks: Chunks created from markdown documents
+    """
     result = client.models.embed_content(
         model='gemini-embedding-001',
         contents=chunks

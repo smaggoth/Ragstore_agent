@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, UploadFile, File, HTTPException
 from pydantic import BaseModel
 from brain.graph import build_graph
-from ingestion.vectorstore import process_document, create_collection, save_chunks, COLLECTION_NAME
+from ingestion.vectorstore import process_document, save_chunks
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -19,6 +19,10 @@ app = FastAPI(lifespan=lifespan)
 class MessageInput(BaseModel):
     thread_id: str
     message: str
+
+@app.get("/")
+def health():
+    return {'message':'App Working'}
 
 @app.post('/chat')
 async def chat(request: Request, data: MessageInput):

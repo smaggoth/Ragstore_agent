@@ -26,18 +26,31 @@ longterm_memory = InMemoryStore(
 )
 
 
-def search_memories(query: str, thread_id: str, store: BaseStore, umbral: float = 0.85):
-    """Search for relevant memories in the long term memory to answer repetitive questions without spend tokens"""
+def search_memories(query: str, thread_id: str, store: BaseStore, threshold: float = 0.85):
+    """
+    Search for relevant memories in the long term memory to answer repetitive questions without spend tokens
+    Args:
+        query: User query
+        thread_id: identification of the conversation
+        store: long-term memories
+        threshold: accuracy level between new query and memories
+    """
     namespace = ('memories', thread_id)
     result = store.search(namespace, query=query, limit=1)
 
-    if result and result[0].score >= umbral:
+    if result and result[0].score >= threshold:
         return result[0].value
     return None
 
 
 def check_memory(state: State, config: RunnableConfig, store: BaseStore):
-    """Search and find the memories if exist"""
+    """
+    Search and find the memories if exist
+    Args:
+        state: Current conversation state
+        config: Information to identify current user
+        store: long-term memories
+    """
     thread_id = config['configurable']['thread_id']
     last_question = state['messages'][-1].content
 
@@ -50,7 +63,13 @@ def check_memory(state: State, config: RunnableConfig, store: BaseStore):
 
 
 def update_memory(state: State, config: RunnableConfig, store: BaseStore):
-    """Function to update the long term memory"""
+    """
+    Function to update the long term memory
+    Args:
+        state: Current conversation state
+        config: Information to identify current user
+        store: long-term memories
+    """
     thread_id = config['configurable']['thread_id']
     namespace = ('memories', thread_id)
     human_messages = [message for message in state['messages'] if isinstance(message, HumanMessage)]
@@ -65,6 +84,11 @@ def update_memory(state: State, config: RunnableConfig, store: BaseStore):
 
 
 def route_after_memory_check(state: State):
+    """
+    Graph node to route the memories check
+    Args:
+        state: Current conversation state
+    """
     last_state_message = state['messages'][-1]
     if isinstance(last_state_message, AIMessage):
         return '__end__'

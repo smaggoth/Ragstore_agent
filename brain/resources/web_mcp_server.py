@@ -11,7 +11,11 @@ tavily_client = TavilyClient()
 
 @mcp.tool()
 def web_search(query: str) -> Dict:
-    """Search in the web for the information requested by the user"""
+    """
+    Search in the web for the information requested by the user that the model can't answer by itself
+    Args:
+        query: user query
+    """
     response = tavily_client.search(query)
     return response
 

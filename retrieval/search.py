@@ -6,6 +6,12 @@ from qdrant_client import models
 client = QdrantClient(url='http://localhost:6333')
 
 def search(query: str, limit: int=5) -> dict:
+    """
+    Function to calculate the best results from the hybrid search in the vector store
+    Args:
+        query: question from the user
+        limit: Limit of results retrieved by the algorithm
+    """
     output = {}
     embedding, _ = embeddings_call([query])
     query_embedding = embedding[0].values

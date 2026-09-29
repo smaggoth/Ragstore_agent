@@ -2,7 +2,8 @@ def chunck_markdown(files_path) -> list:
     """
     Function to divide document in chunks based on headers.
     Args:
-        files_path: Path to markdown documents"""
+        files_path: Path to markdown documents
+    """
     current_chunk = []
     chunks = []
     max_size = 800
@@ -36,7 +37,8 @@ def sub_chunking(chunk, max_size=800):
     """Function to divide big chunks in smaller ones
     Args:
         chunk: Current big chunk to be divided.
-        max_size: Maz size of the final little chunks"""
+        max_size: Maz size of the final little chunks
+    """
     lines = chunk.split('\n')
     sub_chunk = []
     actual = []
@@ -67,7 +69,4 @@ if __name__ == '__main__':
     from pathlib import Path
     result = sub_chunking('# Proyecto RAG con Agentes Orquestados')
     print(len(result))
-    #files_path = Path(__file__).resolve().parent.parent/ "docs" / "README.md"
-    #chunks = chunck_markdown(files_path)
-    #print(len(chunks))
    

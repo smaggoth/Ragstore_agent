@@ -25,7 +25,13 @@ async def build_graph():
     shorterm_memory = InMemorySaver()
 
     def assistant(state: State, config: RunnableConfig, store: BaseStore):
-        """main AI agent"""
+        """
+        main AI agent
+        Args:
+            state: Current conversation state
+            config: Information to identify current user
+            store: long-term memories    
+        """
         thread_id = config['configurable']['thread_id']
         namespace = ('profile', thread_id)
         profile_item = store.get(namespace, 'profile_data')
@@ -82,21 +88,11 @@ async def build_graph():
 
 
 if __name__ == '__main__':
-    #result = extractor.invoke({
-    #    'messages':[{'role':'user', 'content':'Hola mi nombre es jorge trabajo como ingeniero de IA y tengo 31 años ademas soy baterista'}]
-    #})
-    #print(result['responses'][0])
     async def main():
         app = await build_graph()
         app.get_graph(xray=1).draw_mermaid_png(output_file_path="./grafo_output.png")
-        config = {'configurable':{'thread_id':'jorge8a'}}
-        result = await app.ainvoke({'messages':[{'role':'user', 'content':'Hola mi nombre es Jorge, soy ingeniero y acabo de cumplir 31 años'}]}, config)
-        result = await app.ainvoke({'messages':[{'role':'user', 'content':'cual es la 3 fase de mi proyecto RAG?'}]}, config)
-        result = await app.ainvoke({'messages':[{'role':'user', 'content':'recuerdas mi edad?'}]}, config)
-        result = await app.ainvoke({'messages':[{'role':'user', 'content':'Ya casi termino el agente con Langgraph del proyecto'}]}, config)
-        result = await app.ainvoke({'messages':[{'role':'user', 'content':'que es un loro estocastico? resumelo en 4 lineas'}]}, config)
-        result = await app.ainvoke({'messages':[{'role':'user', 'content':'Mi proyecto RAG involucra un loro estocastico?'}]}, config)
-        result = await app.ainvoke({'messages':[{'role':'user', 'content':'recuerdas que tengo 31 años, los cumpli hace casi un mes, el 26 de agosto'}]}, config)
+        config = {'configurable':{'thread_id':'1'}}
+        result = await app.ainvoke({'messages':[{'role':'user', 'content':'Hola'}]}, config)
         for m in result['messages']:
             m.pretty_print()
 

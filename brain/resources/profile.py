@@ -12,7 +12,9 @@ from brain.resources.summarizer import State
 
 
 class Profile(BaseModel):
-    """Stable information from user"""
+    """
+    Stable information from user
+    """
     name: Optional[str] = Field(default=None, description='Name of the user')
     age:  Optional[int] = Field(default=None, description='Age of the user')
     role: Optional[str] = Field(default=None, description='User role or occupation')
@@ -25,7 +27,13 @@ extractor = create_extractor(
 
 
 def update_profile(state: State, config: RunnableConfig, store: BaseStore):
-    """Function to update the user profile with information extracted by TrustCall"""
+    """
+    Function to update the user profile with information extracted by TrustCall
+    Args:
+        state: Current conversation state
+        config: Information to identify current user
+        store: long-term memories
+    """
     thread_id = config['configurable']['thread_id']
     namespace = ('profile', thread_id)
     human_messages = [message for message in state['messages'] if isinstance(message, HumanMessage)]

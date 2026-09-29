@@ -3,7 +3,11 @@ from retrieval.search import search
 
 @tool
 def call_rag(query: str) -> list:
-    """Tool that search for the information requested by the user in a local RAG store when data is not available in the web"""
+    """
+    Tool that search for the information requested by the user in a local RAG store when data is not available in the web
+    Args:
+        query: user query
+    """
     response = search(query)
     current_response = [
        text.lstrip("#\n")
