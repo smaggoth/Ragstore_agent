@@ -44,7 +44,7 @@ def create_collection(name, dimension):
         return name
 
 
-def  save_chunks(chunks:list, dimension:int, embeddings:list):
+def  save_chunks(chunks:list, embeddings:list, dimension:int):
     """
     Function to create the Point Structure for Qdrant vector store
     Args:
